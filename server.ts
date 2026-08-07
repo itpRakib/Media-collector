@@ -1,4 +1,5 @@
 import express from 'express';
+import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
@@ -227,6 +228,35 @@ async function startServer() {
   // API Routes
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', hasGeminiKey: Boolean(apiKey) });
+  });
+
+  app.post('/api/auth/admin-login', (req, res) => {
+    const configuredUsername = process.env.ADMIN_USERNAME;
+    const configuredPassword = process.env.ADMIN_PASSWORD;
+    const { username, password } = req.body;
+
+    if (!configuredUsername || !configuredPassword) {
+      res.status(503).json({ error: 'Administrator authentication is not configured' });
+      return;
+    }
+
+    if (username !== configuredUsername || password !== configuredPassword) {
+      res.status(401).json({ error: 'Invalid administrator credentials' });
+      return;
+    }
+
+    const now = new Date().toISOString();
+    res.json({
+      id: 'admin-master',
+      username: configuredUsername,
+      email: `${configuredUsername}@localhost`,
+      avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(configuredUsername)}`,
+      autoLockMinutes: 0,
+      isVaultLocked: false,
+      backupPasskey: 'SERVER_MANAGED',
+      createdAt: now,
+      lastLoginAt: now,
+    });
   });
 
   // Dedicated Online Poster Fetcher Route

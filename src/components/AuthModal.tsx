@@ -51,6 +51,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [username, setUsername] = useState(currentUser?.username || '');
   const [email, setEmail] = useState(currentUser?.email || '');
   const [password, setPassword] = useState('');
+  const [adminUsername, setAdminUsername] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [pinCode, setPinCode] = useState(currentUser?.pinCode || '');
   const [securityQuestion, setSecurityQuestion] = useState(
     currentUser?.securityQuestion || 'What was your first anime?'
@@ -69,27 +71,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleAdminLogin = () => {
-    const adminUser: UserProfile = {
-      id: 'admin-master',
-      username: 'Administrator',
-      email: 'admin@gmail.com',
-      avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=Administrator',
-      pinCode: '0000',
-      securityQuestion: 'Master Admin Key',
-      securityAnswer: 'admin123',
-      autoLockMinutes: 0,
-      isVaultLocked: false,
-      backupPasskey: 'KURO-ADMIN-MASTER-PASSKEY',
-      createdAt: new Date().toISOString(),
-      lastLoginAt: new Date().toISOString(),
-    };
-    onLogin(adminUser);
-    setSuccessMsg('Administrator Access Granted! Admin password verified.');
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setErrorMsg('');
-    setTimeout(() => {
-      onClose();
-    }, 800);
+
+    try {
+      const response = await fetch('/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: adminUsername, password: adminPassword }),
+      });
+
+      if (!response.ok) {
+        setErrorMsg(response.status === 503 ? 'Administrator login is not configured.' : 'Invalid administrator credentials.');
+        return;
+      }
+
+      const adminUser = (await response.json()) as UserProfile;
+      onLogin(adminUser);
+      setAdminPassword('');
+      setSuccessMsg('Administrator access granted.');
+      setTimeout(() => onClose(), 800);
+    } catch {
+      setErrorMsg('Administrator login is currently unavailable.');
+    }
   };
 
   const handleSendGmailVerification = () => {
@@ -463,24 +468,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {activeTab === 'login' && (
             <div className="space-y-4">
               {/* Administrator Login Quick Option */}
-              <div className="p-4 bg-gradient-to-r from-rose-950/50 via-[#14211d] to-teal-950/40 border border-[#22d3ee]/40 rounded-2xl flex items-center justify-between gap-3 shadow-md">
+              <form onSubmit={handleAdminLogin} className="p-4 bg-gradient-to-r from-rose-950/50 via-[#14211d] to-teal-950/40 border border-[#22d3ee]/40 rounded-2xl space-y-3 shadow-md">
                 <div>
                   <h4 className="text-xs font-bold text-[#22d3ee] flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-rose-400" />
-                    <span>Administrator Master Login</span>
+                    <span>Private Administrator Login</span>
                   </h4>
                   <p className="text-[11px] text-[#8ba8b7] mt-0.5">
-                    Admin Password: <code className="text-rose-400 font-bold bg-[#090d12] px-1.5 py-0.5 rounded">admin123</code>
+                    Enter your private administrator credentials.
                   </p>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={adminUsername}
+                    onChange={(e) => setAdminUsername(e.target.value)}
+                    placeholder="Administrator username"
+                    autoComplete="username"
+                    required
+                    className="w-full px-3 py-2.5 bg-[#090d12] border border-[#1e332d] focus:border-[#22d3ee] rounded-xl text-[#e5ebe9] text-xs outline-none"
+                  />
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Administrator password"
+                    autoComplete="current-password"
+                    required
+                    className="w-full px-3 py-2.5 bg-[#090d12] border border-[#1e332d] focus:border-[#22d3ee] rounded-xl text-[#e5ebe9] text-xs outline-none"
+                  />
+                </div>
                 <button
-                  type="button"
-                  onClick={handleAdminLogin}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#e11d48] to-[#0d9488] text-white text-xs font-bold hover:brightness-110 shadow-lg shadow-[#22d3ee]/20 transition cursor-pointer whitespace-nowrap"
+                  type="submit"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#e11d48] to-[#0d9488] text-white text-xs font-bold hover:brightness-110 shadow-lg shadow-[#22d3ee]/20 transition cursor-pointer whitespace-nowrap"
                 >
                   Login as Admin
                 </button>
-              </div>
+              </form>
 
               <div className="relative flex py-1 items-center">
                 <div className="flex-grow border-t border-[#1e332d]"></div>
