@@ -1,0 +1,6 @@
+{
+  "name": "Anime & Media Collection Tracker",
+  "description": "Track anime, manga, light novels, movies, and TV shows with rich metadata, status tracking, analytics, auto-fetching, and CSV/JSON metadata export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

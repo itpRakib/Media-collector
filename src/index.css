@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Image-inspired Palette: Deep Burgundy Maroon to Dark Void to Oceanic Cyan-Teal */
+    --color-text: #f0f6f8;
+    --color-bg: #0b0f14;
+    --color-card-bg: #121922;
+    --color-card-border: #1e2b38;
+    --color-primary: #22d3ee; /* Electric Cyan Teal */
+    --color-secondary: #008b8b; /* Deep Cyan */
+    --color-accent: #e11d48; /* Deep Rust Burgundy Crimson */
+  }
+
+  .dark {
+    --color-text: #f0f6f8;
+    --color-bg: #0b0f14;
+    --color-card-bg: #121922;
+    --color-card-border: #1e2b38;
+    --color-primary: #22d3ee;
+    --color-secondary: #008b8b;
+    --color-accent: #e11d48;
+  }
+
+  html, body {
+    font-family: 'Kode Mono', monospace, monospace;
+    font-weight: 400;
+    background-color: var(--color-bg);
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      radial-gradient(at 0% 0%, rgba(128, 27, 56, 0.35) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(0, 139, 139, 0.35) 0px, transparent 55%),
+      linear-gradient(to right, #280a13 0%, #090e14 45%, #082933 100%);
+    background-size: 36px 100%, 100% 100%, 100% 100%, 100% 100%;
+    background-attachment: fixed;
+    color: var(--color-text);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Kode Mono', monospace, monospace;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  /* Font size scale overrides */
+  .text-size-sm { font-size: 0.750rem; }
+  .text-size-base { font-size: 1rem; }
+  .text-size-xl { font-size: 1.333rem; }
+  .text-size-2xl { font-size: 1.777rem; }
+  .text-size-3xl { font-size: 2.369rem; }
+  .text-size-4xl { font-size: 3.158rem; }
+  .text-size-5xl { font-size: 4.210rem; }
+
+  /* Theme Background & Text Helper Utilities */
+  .bg-theme {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .bg-theme-card {
+    background-color: var(--color-card-bg);
+    border-color: var(--color-card-border);
+  }
+
+  /* Glow and Gradient Utilities with OKLCH Theme Colors */
+  .glow-accent {
+    box-shadow: 0 0 30px -5px var(--color-primary);
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #e11d48 0%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .bg-aura-mesh-theme {
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.3) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(34, 211, 238, 0.3) 0px, transparent 55%),
+      radial-gradient(at 50% 100%, rgba(13, 148, 136, 0.2) 0px, transparent 50%);
+  }
+
+  /* Prevent text clipping / line-wrapping inside controls */
+  .btn-no-wrap {
+    white-space: nowrap;
+  }
+}
+
+/* Custom Keyframe Animations */
+@keyframes auraPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1) translate(0px, 0px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.12) translate(10px, -10px);
+  }
+}
+
+.animate-aura-pulse {
+  animation: auraPulse 8s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-card-border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+
+
